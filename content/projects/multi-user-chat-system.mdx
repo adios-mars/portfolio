@@ -1,0 +1,72 @@
+---
+slug: multi-user-chat-system
+---
+
+## Overview
+
+A concurrent client-server chat application implemented in C using POSIX threads and raw Berkeley TCP sockets. The system provides multi-room group messaging, private user messaging, and peer-to-peer file transfer capabilities over a robust network protocol.
+
+Engineered with systems programming fundamentals in mind, the architecture employs a thread-per-client concurrency model with granular mutex synchronization to maintain safe access across client registries and chat room states without blocking socket I/O.
+
+## Technical highlights
+
+- **Multi-Threaded Server**: Implements a dedicated worker thread model per client connection using `pthread` to serve multiple simultaneous users asynchronously.
+- **Dynamic Room Architecture**: Dynamic creation and assignment of users to named chat rooms with thread-safe membership tracking.
+- **Direct Messaging Subsystem**: Point-to-point private messaging routed dynamically by nickname lookup.
+- **Chunked File Transfer**: High-performance stream transfers utilizing 8KB payload chunking with sender-recipient framing headers.
+- **Thread Safety**: Mutex-synchronized access (`pthread_mutex_t`) across shared client registries, preventing race conditions.
+- **Resource Management**: Graceful connection lifecycle management, comprehensive socket cleanup on disconnect, and socket reuse configuration (`SO_REUSEADDR`).
+
+## Architecture
+
+The system splits networking responsibilities between a master acceptor thread and dedicated worker threads:
+
+```
+                      +-------------------+
+                      |   Master Thread   |
+                      |  (Accept Loop)    |
+                      +---------+---------+
+                                |
+             +------------------+------------------+
+             | spawns                              | spawns
+             v                                     v
+   +-------------------+                 +-------------------+
+   |  Client Handler 1 |                 |  Client Handler 2 |
+   |     (Worker)      |                 |     (Worker)      |
+   +---------+---------+                 +---------+---------+
+             |                                     |
+             +---------> [ Shared State ] <--------+
+                         - Client Registry
+                         - Room Membership
+                         - Mutex Locks
+```
+
+- **Server Accept Loop**: Listens on TCP port 8888, accepts incoming sockets, and spawns detached worker threads.
+- **Client Concurrency**: Dual-thread client design separating standard input polling (`stdin`) from asynchronous socket packet listening.
+- **File Framing Protocol**: Three-stage protocol consisting of a `[FILE_START]` descriptor header, sequential 8KB data streaming, and a `[FILE_END]` delimiter.
+
+## Tech stack
+
+<TechStack
+  items={[
+    "C",
+    "POSIX Threads",
+    "Berkeley Sockets",
+    "TCP/IP",
+    "GNU Make",
+    "GCC",
+  ]}
+/>
+
+## Command interface
+
+| Command               | Purpose                                    | Example                          |
+| --------------------- | ------------------------------------------ | -------------------------------- |
+| `/nick <name>`        | Assign or switch client display nickname   | `/nick ruth`                     |
+| `/rooms`              | Discover available chat channels           | `/rooms`                         |
+| `/join <room>`        | Join an existing room or create a new room | `/join engineering`              |
+| `/leave`              | Exit current room and return to lobby      | `/leave`                         |
+| `/users`              | List connected users in the active room    | `/users`                         |
+| `/msg <user> <text>`  | Send encrypted direct private message      | `/msg bob Reviewing socket logs` |
+| `/file <user> <path>` | Stream file transfer directly to a user    | `/file bob report.pdf`           |
+| `/quit`               | Disconnect gracefully from server          | `/quit`                          |

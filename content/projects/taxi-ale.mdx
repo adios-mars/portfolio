@@ -1,0 +1,61 @@
+---
+slug: taxi-ale
+---
+
+## Overview
+
+Taxi Ale (ታክሲ አለ) is a real-time transit tracking and seat availability platform designed specifically for the minibus taxi ecosystem in Addis Ababa, Ethiopia. Built with Flutter, Dart, and OpenStreetMap, the platform connects daily commuters with minibus operators to eliminate transit uncertainty.
+
+In Addis Ababa, millions of passengers rely daily on white-and-blue minibus taxis across heavily congested corridors such as Mexico, Bole, Megenagna, Piazza, and Torhailoch. However, unpredictable queue wait times, unknown vehicle seat capacity, and lack of live route tracking create major friction during rush hours.
+
+Taxi Ale bridges this information gap through a dual-role architecture: drivers broadcast their live GPS location and available seat count, while passengers locate approaching vehicles, check free seats, and view turn-by-turn routing with zero-cost open-source infrastructure.
+
+## Key features
+
+### Passenger experience
+
+- **Live Device GPS Tracking**: Instant location fix with animated re-center controls and adaptive permissions handling.
+- **OpenStreetMap & OSRM Engine**: 100% billing-free street map tiles with road polyline routing without Google Cloud billing dependencies.
+- **Predictive Autocomplete Search**: In-memory local terminal prediction for 30+ major Addis Ababa taxi hubs with English and Amharic names, backed by Nominatim online fallback.
+- **Quick Route Chips**: 1-tap destination selection for top commuter hubs (Mexico, Bole, Megenagna, Piazza, Saris, 4 Kilo).
+- **Approaching Minibus Markers**: Interactive minibus vehicle markers displaying live available seats and fare pricing.
+- **Ergonomic Bottom Sheets**: Responsive thumb-zone trip cards that auto-collapse to maintain full map visibility.
+
+### Driver dashboard
+
+- **Onboarding & Verification**: Modal credential verification and license capture.
+- **Route & Plate Configuration**: Minibus plate number validation with live interactive route preview and presets.
+- **Live Location Broadcasting**: Real-time GPS stream broadcasting to nearby commuters along the transit route.
+- **Interactive Seat Manager**: Intuitive counter allowing drivers to adjust available free seats with single taps.
+
+## System architecture
+
+| Layer                | Technology                    | Rationale                                                             |
+| -------------------- | ----------------------------- | --------------------------------------------------------------------- |
+| Frontend Framework   | Flutter / Dart                | Native cross-platform performance with smooth 60fps animations        |
+| Map Rendering        | OpenStreetMap (`flutter_map`) | Free, open-source, billing-free global mapping infrastructure         |
+| Routing & Directions | OSRM Driving API              | Turn-by-turn street-accurate road geometries (GeoJSON)                |
+| Geolocation          | `geolocator`                  | Two-phase GPS retrieval (cached location first, satellite fix second) |
+| Networking           | `http`                        | Asynchronous REST consumption with debounced geocoding (600ms)        |
+| UI/UX System         | Figma & Material 3            | Custom Addis Teal theme (`#2C7480`), soft cyan, and surface gray      |
+
+## Tech stack
+
+<TechStack
+  items={[
+    "Flutter",
+    "Dart",
+    "OpenStreetMap",
+    "OSRM API",
+    "Figma",
+    "Material 3",
+  ]}
+/>
+
+## Engineering highlights
+
+- **Zero-Cost Transit Tracking Architecture**: Eliminates expensive proprietary map API billing by utilizing OpenStreetMap and OSRM (Open Source Routing Machine) for road routing.
+- **Two-Phase GPS Retrieval**: Reads cached device location instantly (`getLastKnownPosition`) to prevent blank map freezes before locking onto precision satellite fixes (`getCurrentPosition`).
+- **Offline In-Memory Terminal Registry**: Pre-indexes 30+ major Addis Ababa minibus terminals with English and Amharic names to deliver zero-latency autocomplete without unnecessary network overhead.
+- **Debounced Geocoding**: Inputs are debounced by 600ms before querying Nominatim to respect rate limits and conserve device battery.
+- **Overflow-Safe Layouts**: Engineered with responsive viewports and `resizeToAvoidBottomInset` safeguards to ensure zero `RenderFlex` overflow errors across various screen dimensions.
