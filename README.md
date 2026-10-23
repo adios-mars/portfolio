@@ -50,6 +50,6 @@ You're free to use my code! Just make sure to <ins>remove all my personal inform
 
 If you have any questions or feedback, feel free to reach out:
 
-- **Email**: ruth.yeneneh@gmail.com
+- **Email**: adiosruthe@gmail.com
 - **GitHub**: [adios-mars](https://github.com/adios-mars)
 - **LinkedIn**: [Ruth Yeneneh](https://linkedin.com/in/ruth-yeneneh)
