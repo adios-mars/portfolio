@@ -16,9 +16,9 @@ import {
   getProjectBySlug,
   getProjectSlugs,
 } from "@/lib/projects";
+import { cn } from "@/lib/utils";
 import { BreadcrumbJsonLd, projectsBreadcrumbs } from "@/seo/json-ld";
 import { createMetadata } from "@/seo/metadata";
-import { cn } from "@/lib/utils";
 import type { Project } from "@/types/projects";
 
 interface ProjectPageProps {

@@ -42,8 +42,7 @@ const ExperienceNodeAnchor = ({
     aria-label="Milestone bullet point"
     className={cn(
       "absolute top-8 sm:top-10 -left-8 sm:-left-12 flex size-5 sm:size-6 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full border transition-all duration-300 z-10 cursor-pointer hover:scale-125 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
-      isActive &&
-        "border-foreground bg-background scale-110",
+      isActive && "border-foreground bg-background scale-110",
       isPassed &&
         !isActive &&
         "border-foreground/50 bg-background hover:border-foreground",

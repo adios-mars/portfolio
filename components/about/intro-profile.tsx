@@ -168,11 +168,14 @@ const IntroProfile = ({ mode }: IntroProfileProps) => {
         identityStart + IDENTITY_HOLD_MS
       ),
       // Fail-safe unlock: ensures scroll and UI are never blocked
-      window.setTimeout(() => {
-        setIsIntroComplete(true);
-        setPhase("profile");
-        markGreetingSeen();
-      }, identityStart + IDENTITY_HOLD_MS + 700)
+      window.setTimeout(
+        () => {
+          setIsIntroComplete(true);
+          setPhase("profile");
+          markGreetingSeen();
+        },
+        identityStart + IDENTITY_HOLD_MS + 700
+      )
     );
 
     return () => {

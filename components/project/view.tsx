@@ -55,7 +55,8 @@ const FeaturedProjectCard = ({
         <div className="flex items-center justify-between gap-2 border-b border-border/60 pb-2.5">
           <div className="flex shrink-0 items-center gap-2">
             <span className="font-mono text-xs sm:text-sm font-bold tracking-widest text-muted-foreground tabular-nums">
-              {String(index + 1).padStart(2, "0")} / {String(total).padStart(2, "0")}
+              {String(index + 1).padStart(2, "0")} /{" "}
+              {String(total).padStart(2, "0")}
             </span>
             <span className="font-mono inline-flex items-center rounded-full border border-border/80 bg-muted/50 px-2 py-0.5 text-[11px] font-semibold tracking-widest uppercase text-muted-foreground">
               {project.category}
@@ -72,7 +73,10 @@ const FeaturedProjectCard = ({
                   <a
                     aria-label="Visit Website"
                     href={project.links.website}
-                    onClick={handleExternalClick("website", project.links.website)}
+                    onClick={handleExternalClick(
+                      "website",
+                      project.links.website
+                    )}
                     rel="noreferrer"
                     target="_blank"
                   >
@@ -92,7 +96,10 @@ const FeaturedProjectCard = ({
                   <a
                     aria-label="View GitHub Repository"
                     href={project.links.github}
-                    onClick={handleExternalClick("github", project.links.github)}
+                    onClick={handleExternalClick(
+                      "github",
+                      project.links.github
+                    )}
                     rel="noreferrer"
                     target="_blank"
                   >

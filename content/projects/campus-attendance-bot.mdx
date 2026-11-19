@@ -18,12 +18,12 @@ Campus Attendance Bot is an asynchronous Telegram-based attendance management sy
 
 ## System architecture
 
-| Layer           | Technology               | Purpose                                                      |
-| --------------- | ------------------------ | ------------------------------------------------------------ |
-| Client Surface  | Telegram Bot Interface   | Cross-platform mobile, desktop, and web access for students  |
-| Bot & FSM Layer | Python 3 / Aiogram 3     | Asynchronous router handlers and multi-step conversation FSM |
-| Concurrency     | Asyncio + SQLite WAL     | High-concurrency classroom batch check-ins without lockups   |
-| Reporting       | ReportLab                | Institutional vector PDF attendance sheets and summaries     |
+| Layer           | Technology             | Purpose                                                      |
+| --------------- | ---------------------- | ------------------------------------------------------------ |
+| Client Surface  | Telegram Bot Interface | Cross-platform mobile, desktop, and web access for students  |
+| Bot & FSM Layer | Python 3 / Aiogram 3   | Asynchronous router handlers and multi-step conversation FSM |
+| Concurrency     | Asyncio + SQLite WAL   | High-concurrency classroom batch check-ins without lockups   |
+| Reporting       | ReportLab              | Institutional vector PDF attendance sheets and summaries     |
 
 ## Tech stack
 

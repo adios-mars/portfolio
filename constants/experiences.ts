@@ -55,7 +55,13 @@ export const EXPERIENCES: readonly Experience[] = [
       endAt: "PRESENT",
       startAt: "OCT 2026",
     },
-    experienceTech: ["Python", "Aiogram 3", "Asyncio", "SQLite WAL", "ReportLab"],
+    experienceTech: [
+      "Python",
+      "Aiogram 3",
+      "Asyncio",
+      "SQLite WAL",
+      "ReportLab",
+    ],
     experienceTitle: "Backend & Bot Developer",
     orgDescription:
       "Asynchronous campus attendance automation built for Dire Dawa University (DDU) courses and cohorts.",

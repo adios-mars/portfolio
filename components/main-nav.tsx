@@ -330,7 +330,11 @@ const MobileNav = () => {
         aria-label={open ? "Close navigation menu" : "Open navigation menu"}
         aria-expanded={open}
       >
-        {open ? <XIcon className="size-5.5" /> : <MenuIcon className="size-5.5" />}
+        {open ? (
+          <XIcon className="size-5.5" />
+        ) : (
+          <MenuIcon className="size-5.5" />
+        )}
       </button>
 
       {mounted ? createPortal(navOverlay, document.body) : null}
