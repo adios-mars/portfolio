@@ -1,0 +1,13 @@
+---
+slug: systems-network-developer
+---
+
+## Overview
+
+Designed and built a multi-threaded client-server networking application in C using POSIX threads (`pthread`) and raw Berkeley TCP sockets without high-level networking abstractions.
+
+## Key results
+
+- **Thread-Per-Client Architecture**: Separated the master socket accept loop (`SO_REUSEADDR`) from detached worker threads handling asynchronous client messaging.
+- **Thread-Safe Shared State**: Guarded client registries and dynamic room memberships with `pthread_mutex_t` locks to prevent data races.
+- **Framed File Streaming**: Built a three-stage binary transfer protocol (`[FILE_START]`, sequential 8KB payload chunks, `[FILE_END]`) alongside private direct messaging.

@@ -7,34 +7,35 @@ import {
   motion,
   useReducedMotion,
 } from "motion/react";
-import Image from "next/image";
 import { useEffect, useState } from "react";
 
 import { FlipRoles } from "@/components/about/flip-roles";
 import { Title } from "@/components/ui/title";
 import { UserAvatar } from "@/components/user-avatar";
-import { SITE } from "@/constants/site";
 import { USER } from "@/constants/user";
 import { useLockBodyScroll } from "@/hooks/use-lock-body-scroll";
+import {
+  finishHydration,
+  hasSeenGreeting,
+  isHydrating,
+  markGreetingSeen,
+} from "@/lib/intro-session";
 
 const GREETINGS = [
   "Hello",
+  "ሰላም",
   "Bonjour",
-  "स्वागत है",
-  "नमस्कार",
   "Ciao",
-  "Olá",
-  "おい",
-  "Hallå",
-  "Guten tag",
+  "Guten Tag",
+  "स्वागत है",
 ] as const;
-const GREETING_DURATION_MS = 180;
-const IDENTITY_HOLD_MS = 600;
+const GREETING_DURATION_MS = 170;
+const IDENTITY_HOLD_MS = 550;
 const PROFILE_LAYOUT_DURATION_SECONDS = 0.65;
-const CURTAIN_DELAY_SECONDS = 0.78;
-const CURTAIN_DURATION_SECONDS = 0.28;
-const DETAIL_DELAY_SECONDS = 0.58;
-const DETAIL_DURATION_SECONDS = 0.18;
+const CURTAIN_DELAY_SECONDS = 0.05;
+const CURTAIN_DURATION_SECONDS = 0.55;
+const DETAIL_DELAY_SECONDS = 0.35;
+const DETAIL_DURATION_SECONDS = 0.22;
 const ROLE_STAGGER_SECONDS = 0.06;
 const PROFILE_AVATAR_LAYOUT_ID = "home-profile-avatar";
 const PROFILE_NAME_LAYOUT_ID = "home-profile-name";
@@ -48,7 +49,7 @@ const profileLayoutTransition = {
 const curtainTransition = {
   delay: CURTAIN_DELAY_SECONDS,
   duration: CURTAIN_DURATION_SECONDS,
-  ease: [0.23, 1, 0.32, 1],
+  ease: [0.76, 0, 0.24, 1],
   type: "tween",
 } as const;
 
@@ -77,17 +78,18 @@ interface IntroProfileProps {
 }
 
 const ProfileHeader = ({ shouldAnimateDetails }: ProfileHeaderProps) => (
-  <div className="relative z-2 flex items-center gap-5">
+  <div className="relative z-2 flex items-center gap-5 sm:gap-6">
     <div>
       <UserAvatar
         layoutId={shouldAnimateDetails ? PROFILE_AVATAR_LAYOUT_ID : undefined}
         layoutTransition={
           shouldAnimateDetails ? profileLayoutTransition : undefined
         }
+        size={80}
       />
     </div>
     <div>
-      <Title className="font-sans tracking-tight whitespace-nowrap">
+      <Title className="font-sans text-3xl sm:text-4xl md:text-5xl font-bold tracking-tight whitespace-nowrap">
         <motion.span
           layoutId={shouldAnimateDetails ? PROFILE_NAME_LAYOUT_ID : undefined}
           className="inline-block"
@@ -132,15 +134,22 @@ const IntroProfile = ({ mode }: IntroProfileProps) => {
   const [phase, setPhase] = useState<IntroPhase>("greetings");
   const [greetingIndex, setGreetingIndex] = useState(0);
   const [isIntroComplete, setIsIntroComplete] = useState(false);
-  const shouldPlayIntro = mode === "play" && !shouldReduceMotion;
+  const isClient = typeof window !== "undefined";
+  const alreadySeen =
+    isClient &&
+    !isHydrating() &&
+    (hasSeenGreeting() || Boolean(window.location.hash));
+  const shouldPlayIntro =
+    mode === "play" && !shouldReduceMotion && !alreadySeen;
   const visiblePhase = shouldPlayIntro ? phase : "profile";
-  const shouldLockScroll =
-    mode === "pending" || (shouldPlayIntro && !isIntroComplete);
+  const shouldLockScroll = shouldPlayIntro && !isIntroComplete;
 
   useLockBodyScroll(shouldLockScroll);
 
   useEffect(() => {
+    finishHydration();
     if (!shouldPlayIntro) {
+      markGreetingSeen();
       return;
     }
 
@@ -157,7 +166,13 @@ const IntroProfile = ({ mode }: IntroProfileProps) => {
       window.setTimeout(
         () => setPhase("profile"),
         identityStart + IDENTITY_HOLD_MS
-      )
+      ),
+      // Fail-safe unlock: ensures scroll and UI are never blocked
+      window.setTimeout(() => {
+        setIsIntroComplete(true);
+        setPhase("profile");
+        markGreetingSeen();
+      }, identityStart + IDENTITY_HOLD_MS + 700)
     );
 
     return () => {
@@ -171,38 +186,23 @@ const IntroProfile = ({ mode }: IntroProfileProps) => {
     <MotionConfig reducedMotion="user">
       <LayoutGroup id="home-profile-intro">
         <div>
-          {mode === "pending" ? (
-            <div
-              data-intro-pending=""
-              aria-hidden="true"
-              className="bg-background pointer-events-auto fixed -inset-1 z-3 touch-none"
-            />
-          ) : null}
-
-          {shouldPlayIntro && visiblePhase !== "profile" ? (
-            <Image
-              src={SITE.AUTHOR.AVATAR}
-              alt=""
-              width={60}
-              height={60}
-              aria-hidden="true"
-              className="pointer-events-none fixed size-px opacity-0"
-              priority
-            />
-          ) : null}
-
-          {mode === "play" ? (
+          {shouldPlayIntro && !isIntroComplete ? (
             <AnimatePresence
               initial={false}
-              onExitComplete={() => setIsIntroComplete(true)}
+              onExitComplete={() => {
+                setIsIntroComplete(true);
+                markGreetingSeen();
+              }}
             >
               {visiblePhase === "profile" ? null : (
                 <motion.div
                   key="intro-backdrop"
                   data-intro-backdrop=""
                   aria-hidden="true"
-                  className="bg-background pointer-events-auto fixed -inset-1 z-1 touch-none will-change-transform"
-                  exit={{ transform: "translate3d(0, -100%, 0)" }}
+                  className="bg-background pointer-events-none fixed inset-0 z-[80] will-change-transform"
+                  initial={{ y: 0 }}
+                  animate={{ y: 0 }}
+                  exit={{ y: "-100%" }}
                   transition={curtainTransition}
                 />
               )}
@@ -210,29 +210,29 @@ const IntroProfile = ({ mode }: IntroProfileProps) => {
           ) : null}
 
           {shouldPlayIntro && visiblePhase === "greetings" ? (
-            <p
+            <div
               aria-hidden="true"
-              className="text-foreground pointer-events-none fixed inset-0 z-2 flex items-center justify-center gap-1.5 text-2xl leading-snug font-semibold tracking-tight"
+              className="text-foreground pointer-events-none fixed inset-0 z-[90] flex items-center justify-center gap-2.5 text-3xl sm:text-4xl md:text-5xl font-bold tracking-tight"
             >
-              <span className="size-1.5 rounded-full bg-current" />
+              <span className="size-2.5 rounded-full bg-zinc-900 dark:bg-white" />
               <span>{GREETINGS[greetingIndex]}</span>
-            </p>
+            </div>
           ) : null}
 
           {shouldPlayIntro && visiblePhase === "identity" ? (
             <div
               aria-hidden="true"
-              className="text-foreground pointer-events-none fixed inset-0 z-2 flex items-center justify-center gap-2 text-2xl leading-snug tracking-tight"
+              className="text-foreground pointer-events-none fixed inset-0 z-[90] flex items-center justify-center gap-3 text-3xl sm:text-4xl md:text-5xl tracking-tight"
             >
-              <span className="font-medium">I’m</span>
+              <span className="font-light text-muted-foreground">I’m</span>
               <UserAvatar
                 layoutId={PROFILE_AVATAR_LAYOUT_ID}
                 layoutTransition={profileLayoutTransition}
-                size={38}
+                size={44}
               />
               <motion.span
                 layoutId={PROFILE_NAME_LAYOUT_ID}
-                className="inline-block font-semibold"
+                className="inline-block font-bold"
                 transition={{ layout: profileLayoutTransition }}
               >
                 {USER.firstName}

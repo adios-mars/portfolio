@@ -1,0 +1,38 @@
+---
+slug: addis-market-tracker
+---
+
+## Overview
+
+Addis Market Tracker is a web platform and Telegram Mini App that tracks daily staple food prices across major Addis Ababa trading hubs — Merkato, Atkilt Tera, Shola, and Piassa.
+
+Designed to solve a practical everyday problem where commodity prices vary widely between markets, the platform gives shoppers a single place to compare verified rates in ETB for staples like White Teff, Red Teff, Misir, Shimbra, and Wheat before heading out.
+
+## Key features
+
+- **Storefront Produce Catalog**: Clean visual catalog displaying Ethiopian staple goods with current verified market pricing in ETB.
+- **Lowest-Price Highlighting**: Automatically identifies and surfaces which trading hub offers the best rate for each staple.
+- **Cross-Market Comparison**: Side-by-side price comparison across Merkato, Atkilt Tera, Shola, and Piassa.
+- **Telegram Mini App Integration**: Runs natively inside Telegram using the Telegram WebApp SDK alongside a companion polling bot for onboarding and quick lookups.
+
+## System architecture
+
+| Layer         | Technology                      | Purpose                                                    |
+| ------------- | ------------------------------- | ---------------------------------------------------------- |
+| Backend API   | Python 3 / FastAPI              | Lightweight REST endpoints and server-rendered pages       |
+| Database      | SQLite (standard library)       | Zero-ORM relational storage for markets and daily prices   |
+| Web & MiniApp | Jinja2 / CSS / JavaScript / SDK | Responsive storefront UI and Telegram Mini App integration |
+| Bot Service   | Telegram Bot API                | Polling bot companion for user onboarding and quick access |
+
+## Tech stack
+
+<TechStack
+  items={[
+    "Python",
+    "FastAPI",
+    "SQLite",
+    "Jinja2",
+    "JavaScript",
+    "Telegram WebApp SDK",
+  ]}
+/>

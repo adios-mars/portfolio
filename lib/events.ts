@@ -1,6 +1,7 @@
 import { z } from "zod";
 
 import { Clarity, isClarityReady } from "@/lib/clarity";
+import { saveReturnTarget } from "@/lib/intro-session";
 
 const eventNames = [
   "contact_link_click",
@@ -82,11 +83,13 @@ export const trackExperienceDetailClick = (
   slug: string,
   title: string,
   location: "home" | "listing"
-) =>
-  trackEvent({
+) => {
+  saveReturnTarget("experience");
+  return trackEvent({
     name: "experience_detail_click",
     properties: { location, slug, title },
   });
+};
 
 export const trackExternalLinkClick = (properties: {
   context: string;
@@ -116,11 +119,13 @@ export const trackProjectDetailClick = (
   slug: string,
   title: string,
   location: "home" | "listing"
-) =>
-  trackEvent({
+) => {
+  saveReturnTarget("projects");
+  return trackEvent({
     name: "project_detail_click",
     properties: { location, slug, title },
   });
+};
 
 export const trackSectionAnchorClick = (section: string) =>
   trackEvent({

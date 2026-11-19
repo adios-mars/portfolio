@@ -28,7 +28,7 @@ export const UserAvatar = ({
       alt={`Portrait of ${SITE.AUTHOR.NAME}`}
       width={size}
       height={size}
-      className="size-full rounded-full object-cover"
+      className="size-full rounded-full object-cover border border-border/60"
       priority
     />
   </motion.div>

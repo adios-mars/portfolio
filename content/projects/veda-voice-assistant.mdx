@@ -1,0 +1,42 @@
+---
+slug: veda-voice-assistant
+---
+
+## Overview
+
+Veda is a low-latency conversational AI voice assistant and companion built for Linux, macOS, and POSIX-compliant environments. Engineered around automated multi-model LLM failover, pre-upload audio compression, resilient cloud fallbacks, and an embedded dark web interface, it delivers natural voice and text conversations even over unstable connections.
+
+## Core engineering features
+
+- **Resilient Multi-Tier LLM Failover**: Routes primarily through Google Gemini with automatic failover across secondary Gemini and Gemma models when hitting rate limits (`429`) or transient service errors (`503`), plus pre-synthesis text sanitization for cleaner speech cadence.
+- **Pre-Upload Audio Compression**: Captures 16kHz PCM audio via PyAudio with WebRTC Voice Activity Detection (VAD) and compresses clips to 32kbps MP3 via `ffmpeg`, reducing upload payload size by over 85%.
+- **Dual-Engine Speech-to-Text (STT)**: Uses Deepgram Nova-2 with a strict 5-second timeout and falls back automatically to Gemini Multimodal Audio transcription on network disruption.
+- **Fault-Tolerant Neural TTS**: Generates primary voice responses with Microsoft Edge-TTS (with exponential backoff retries) and falls back to Google Text-to-Speech (`gTTS`).
+- **Native Linux & Cross-Platform Audio Routing**: Automatically detects and dispatches playback through PipeWire (`pw-play`), PulseAudio (`paplay`), macOS (`afplay`), ALSA (`aplay`), or FFplay (`ffplay`), including Bluetooth headset support.
+- **Embedded Web Interface**: Minimalist dark web UI on local port 5000 showing live assistant states (`Idle`, `Listening`, `Thinking`, `Speaking`) with typed input and conversation streaming.
+
+## Architecture pipeline
+
+```text
+Microphone (PyAudio + WebRTC VAD)
+  -> ffmpeg 32kbps MP3 Compression
+  -> Deepgram Nova-2 STT (fallback: Gemini Multimodal STT)
+  -> Gemini / OpenAI LLM Pool (automatic quota failover)
+  -> Edge-TTS Neural (fallback: gTTS)
+  -> Native Audio Sink (PipeWire / PulseAudio / ALSA / afplay)
+```
+
+## Tech stack
+
+<TechStack
+  items={[
+    "Python",
+    "Google Gemini",
+    "OpenAI",
+    "Deepgram Nova-2",
+    "Edge-TTS",
+    "WebRTC VAD",
+    "PipeWire",
+    "FFmpeg",
+  ]}
+/>

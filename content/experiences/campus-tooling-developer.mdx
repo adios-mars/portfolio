@@ -1,0 +1,13 @@
+---
+slug: campus-tooling-developer
+---
+
+## Overview
+
+Built **Campus Attendance Bot** for Dire Dawa University (DDU) to replace manual paper roll calls with a verifiable, fast Telegram-based workflow for instructors, Class Representatives, and students.
+
+## Key results
+
+- **High-Concurrency Check-Ins**: Configured SQLite in Write-Ahead Logging (WAL) mode so entire classrooms can submit attendance concurrently without database lock contention.
+- **Anti-Cheat Session Control**: Added randomized 4-digit PINs with strict 60-second check-in windows alongside one-tap manual override logging for students with depleted phones.
+- **Automated Institutional Reporting**: Generated vector-formatted PDF attendance dossiers via ReportLab with zebra striping and formal signature blocks, plus automatic 3-absence disciplinary alerts.

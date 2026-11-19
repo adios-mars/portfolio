@@ -1,12 +1,20 @@
 import { ContactItem } from "@/components/contact/item";
-import { CopyLink } from "@/components/copy-link";
+import { SectionHeading } from "@/components/section-heading";
 import { prefetchGlimpses } from "@/components/ui/glimpse/server";
 import { Section } from "@/components/ui/section";
-import { Title } from "@/components/ui/title";
 import { resolveContacts } from "@/lib/contacts";
 import { cn } from "@/lib/utils";
 
-const ContactSection = async ({ className }: { className?: string }) => {
+interface ContactSectionProps {
+  className?: string;
+  showHeader?: boolean;
+}
+
+/** Renders resolved social profile tiles with prefetched hover link previews. */
+const ContactSection = async ({
+  className,
+  showHeader = true,
+}: ContactSectionProps) => {
   const contacts = resolveContacts();
   const contactUrls = contacts
     .map((contact) => contact.link?.url)
@@ -16,30 +24,28 @@ const ContactSection = async ({ className }: { className?: string }) => {
   return (
     <Section
       className={cn(
-        "delay-600 grid grid-cols-1 justify-start gap-2",
+        "animate-none grid grid-cols-1 justify-start gap-4 p-0 scroll-mt-24",
         className
       )}
       id="socials"
     >
-      <span className="group/social flex items-center gap-1">
-        <Title
-          className="text-xl font-medium italic"
-          render={<h2>{"socials."}</h2>}
+      {showHeader ? (
+        <SectionHeading
+          copyLinkTitle="Socials"
+          eyebrow="04 — Networks"
+          title="Socials"
         />
-        <CopyLink
-          title={"Socials"}
-          className="hidden group-hover/social:inline-flex"
-        />
-      </span>
-      <Section className="group grid grid-cols-1 sm:grid-cols-2 justify-start p-0">
-        {contacts.map((contact, contactIndex) => (
+      ) : null}
+
+      <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-1">
+        {contacts.map((contact) => (
           <ContactItem
             {...contact}
-            key={contactIndex}
+            key={contact.title}
             preview={previews[contact.link?.url]}
           />
         ))}
-      </Section>
+      </div>
     </Section>
   );
 };

@@ -23,10 +23,15 @@ export const ModeToggle = () => {
     <Tooltip>
       <TooltipTrigger
         render={
-          <Button variant="ghost" size="icon-sm" onClick={handleToggle} />
+          <Button
+            variant="outline"
+            size="icon-lg"
+            className="size-10 rounded-full border-border/70 bg-background/60 hover:bg-accent"
+            onClick={handleToggle}
+          />
         }
       >
-        <Icons.theme />
+        <Icons.theme className="size-5" />
       </TooltipTrigger>
       <TooltipContent>
         Toggle Mode

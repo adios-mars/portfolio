@@ -1,52 +1,93 @@
 "use client";
 
-import { useLayoutEffect, useState } from "react";
+import { useLenis } from "lenis/react";
+import { useEffect, useState } from "react";
 import type { ReactNode } from "react";
 
 import { IntroProfile } from "@/components/about/intro-profile";
 import type { IntroMode } from "@/components/about/intro-profile";
 import { Section } from "@/components/ui/section";
-
-const HOME_INTRO_SESSION_KEY = "home-intro-started";
-let hasHomeIntroStarted = false;
+import {
+  finishHydration,
+  getAndClearReturnTarget,
+  hasSeenGreeting,
+  isHydrating,
+  markGreetingSeen,
+} from "@/lib/intro-session";
+import { cn } from "@/lib/utils";
 
 interface IntroSectionProps {
   children: ReactNode;
 }
 
 const IntroSection = ({ children }: IntroSectionProps) => {
-  const [introMode, setIntroMode] = useState<IntroMode>(
-    hasHomeIntroStarted ? "skip" : "pending"
-  );
+  const lenis = useLenis();
 
-  useLayoutEffect(() => {
-    try {
-      hasHomeIntroStarted ||=
-        window.sessionStorage.getItem(HOME_INTRO_SESSION_KEY) === "true";
-    } catch {
-      // Fall back to the in-memory flag when storage is unavailable.
+  // Synchronously initialize to "skip" during client-side navigation
+  const [introMode, setIntroMode] = useState<IntroMode>(() => {
+    if (
+      typeof window !== "undefined" &&
+      !isHydrating() &&
+      (hasSeenGreeting() || Boolean(window.location.hash))
+    ) {
+      return "skip";
     }
+    return "play";
+  });
 
-    if (hasHomeIntroStarted) {
+  useEffect(() => {
+    finishHydration();
+    if (hasSeenGreeting() || window.location.hash) {
       setIntroMode("skip");
-      return;
+      markGreetingSeen();
     }
 
-    hasHomeIntroStarted = true;
+    // Scroll restoration when returning from a case study or anchor link
+    const { scrollY, section } = getAndClearReturnTarget();
+    const hash = typeof window === "undefined" ? "" : window.location.hash;
+    const targetSection = section ?? (hash ? hash.replace("#", "") : null);
 
-    try {
-      window.sessionStorage.setItem(HOME_INTRO_SESSION_KEY, "true");
-    } catch {
-      // The in-memory flag still prevents repeats during client navigation.
+    if (scrollY !== null || targetSection !== null) {
+      const timer = setTimeout(() => {
+        if (scrollY !== null && scrollY > 0) {
+          if (lenis) {
+            lenis.scrollTo(scrollY, { immediate: true });
+          } else {
+            window.scrollTo({ behavior: "instant", top: scrollY });
+          }
+        } else if (targetSection) {
+          const el = document.querySelector<HTMLElement>(`#${targetSection}`);
+          if (el) {
+            if (lenis) {
+              lenis.scrollTo(el, { immediate: true });
+            } else {
+              el.scrollIntoView({ behavior: "instant", block: "start" });
+            }
+          }
+        }
+      }, 80);
+      return () => clearTimeout(timer);
     }
+  }, [lenis]);
 
-    setIntroMode("play");
+  useEffect(() => {
+    // When user scrolls, mark greeting as seen
+    const handleScroll = () => {
+      if (window.scrollY > 80) {
+        markGreetingSeen();
+      }
+    };
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
   return (
     <Section
       id="about"
-      className={introMode === "skip" ? "space-y-4" : "animate-none space-y-4"}
+      className={cn(
+        "min-h-[calc(100dvh-6.5rem)] flex flex-col justify-center pt-4 sm:pt-6 pb-12",
+        introMode === "skip" ? "space-y-4" : "animate-none space-y-4"
+      )}
     >
       <IntroProfile mode={introMode} />
       {children}

@@ -18,7 +18,7 @@ const FlipRoles = ({
   return (
     <div ref={ref} {...props}>
       <TextFlip
-        className="shimmer text-base leading-snug text-muted-foreground shimmer-once shimmer-duration-1500 not-dark:shimmer-color-foreground"
+        className="shimmer text-base sm:text-lg font-medium leading-snug text-muted-foreground shimmer-once shimmer-duration-1500 not-dark:shimmer-color-foreground"
         interval={3}
         play={isPageInView && isInView}
       >

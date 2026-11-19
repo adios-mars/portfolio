@@ -1,5 +1,6 @@
 "use client";
 
+import { useLenis } from "lenis/react";
 import { ArrowUpIcon } from "lucide-react";
 import { useMotionValueEvent, useScroll } from "motion/react";
 import { useState } from "react";
@@ -11,6 +12,7 @@ export const ScrollToTop = ({
   className,
   ...props
 }: React.ComponentProps<"button">) => {
+  const lenis = useLenis();
   const { scrollY } = useScroll();
 
   const [visible, setVisible] = useState(false);
@@ -39,7 +41,14 @@ export const ScrollToTop = ({
       variant="secondary"
       size="icon-sm"
       aria-label="Scroll to top"
-      onClick={() => window.scrollTo({ behavior: "smooth", top: 0 })}
+      onClick={() => {
+        if (lenis) {
+          lenis.start();
+          lenis.scrollTo(0);
+          return;
+        }
+        window.scrollTo({ behavior: "smooth", top: 0 });
+      }}
       {...props}
     >
       <ArrowUpIcon />

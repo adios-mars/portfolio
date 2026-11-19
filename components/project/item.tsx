@@ -1,8 +1,8 @@
 "use client";
 
-import { GlobeIcon } from "lucide-react";
+import { ArrowUpRightIcon, GlobeIcon } from "lucide-react";
 import Link from "next/link";
-import React from "react";
+import type React from "react";
 
 import { Icons } from "@/components/icons";
 import { MediaPreview } from "@/components/media-preview";
@@ -55,19 +55,19 @@ const ProjectLink = ({
         <TooltipTrigger
           render={
             <Button
-              variant="ghost"
-              size="icon-sm"
-              className="text-muted-foreground"
+              className="text-muted-foreground hover:text-foreground"
               nativeButton={false}
               render={
                 <a
-                  href={href}
-                  target="_blank"
-                  rel="noreferrer"
                   aria-label={label}
+                  href={href}
                   onClick={handleClick}
+                  rel="noreferrer"
+                  target="_blank"
                 />
               }
+              size="icon-sm"
+              variant="ghost"
             />
           }
         >
@@ -80,15 +80,7 @@ const ProjectLink = ({
 
   return (
     <AppLink
-      className={cn(
-        "text-muted-foreground min-w-[60px] text-xs font-normal",
-        listClassName
-      )}
-      href={href}
-      target="_blank"
-      external
-      previewSide="bottom"
-      preview={preview}
+      className={cn("text-muted-foreground text-xs font-medium", listClassName)}
       eventName="external_link_click"
       eventProperties={{
         context: "project_item",
@@ -97,6 +89,11 @@ const ProjectLink = ({
         title,
         url: href,
       }}
+      external
+      href={href}
+      preview={preview}
+      previewSide="bottom"
+      target="_blank"
     >
       {label}
     </AppLink>
@@ -130,18 +127,26 @@ const resolvePreview = (
 interface ProjectItemProps
   extends
     Omit<React.HTMLAttributes<HTMLDivElement>, "title">,
-    Pick<Project, "slug" | "title" | "description" | "links" | "image"> {
+    Pick<
+      Project,
+      "slug" | "title" | "description" | "links" | "image" | "category" | "date"
+    > {
+  index?: number;
   showHeader?: boolean;
   variant?: string;
   previews?: Record<string, GlimpseData>;
 }
 
+/** Displays a numbered monochrome project showcase card with links and previews. */
 const ProjectItem = ({
   slug,
   title,
+  category,
+  date,
   links,
   description,
   image: projectImage,
+  index = 0,
   showHeader = true,
   className,
   variant = "list",
@@ -150,14 +155,16 @@ const ProjectItem = ({
 }: ProjectItemProps) => {
   const isGrid = variant === "grid";
   const image = projectImage ?? previews?.[links?.website ?? ""]?.image ?? "";
+  const formattedIndex = String(index + 1).padStart(2, "0");
+
+  const handleDetailClick = () =>
+    trackProjectDetailClick(slug, title, showHeader ? "home" : "listing");
 
   const titleLink = (
     <Link
-      href={`${ROUTES.PROJECTS}/${slug}`}
       className="hover:underline underline-offset-4"
-      onClick={() =>
-        trackProjectDetailClick(slug, title, showHeader ? "home" : "listing")
-      }
+      href={`${ROUTES.PROJECTS}/${slug}`}
+      onClick={handleDetailClick}
     >
       {title}
     </Link>
@@ -181,51 +188,97 @@ const ProjectItem = ({
   return (
     <div
       className={cn(
-        "py-4 w-full space-y-1 transition-[border-color,opacity] duration-50 hover:opacity-100 group-hover:opacity-30",
+        "group/card flex h-full w-full flex-col justify-between gap-4 rounded-2xl border border-border/80 bg-card/50 p-5 sm:p-6 transition-all duration-200 hover:border-foreground/30 hover:bg-card",
         className
       )}
       {...attr}
     >
-      {isGrid && image && (
-        <MediaPreview
-          src={image}
-          title={title}
-          className="mb-2 aspect-1200/630"
-        />
-      )}
-      <div className="flex items-center justify-between gap-4">
-        <Title
-          className="font-sans text-base font-normal"
-          render={showHeader ? <h3>{titleLink}</h3> : <h2>{titleLink}</h2>}
-        />
-        <div className="flex shrink-0 flex-row items-center justify-start gap-1.5">
-          {links.website && (
-            <ProjectLink
-              href={links.website}
-              label="Website"
-              icon={<GlobeIcon />}
-              isGrid={isGrid}
-              preview={websitePreview}
-              listClassName="min-w-[66px]"
-              slug={slug}
+      <div className="space-y-4">
+        <div className="flex flex-wrap items-center justify-between gap-3">
+          <div className="flex items-center gap-2.5">
+            <span className="font-mono text-xs font-semibold tracking-widest text-muted-foreground tabular-nums">
+              {formattedIndex}
+            </span>
+            <span className="font-mono inline-flex items-center rounded-full border border-border/80 bg-muted/40 px-2.5 py-0.5 text-[10px] font-medium tracking-widest uppercase text-muted-foreground">
+              {`${category} · ${date.year}`}
+            </span>
+          </div>
+
+          <div className="flex shrink-0 flex-row items-center justify-end gap-3">
+            {links.website && (
+              <ProjectLink
+                href={links.website}
+                icon={<GlobeIcon />}
+                isGrid={isGrid}
+                label="Website"
+                preview={websitePreview}
+                slug={slug}
+                title={title}
+              />
+            )}
+            {links.github && (
+              <ProjectLink
+                href={links.github}
+                icon={<Icons.github />}
+                isGrid={isGrid}
+                label="GitHub"
+                preview={githubPreview}
+                slug={slug}
+                title={title}
+              />
+            )}
+          </div>
+        </div>
+
+        {isGrid && image ? (
+          <MediaPreview
+            className="aspect-1200/630 grayscale transition-[filter] duration-300 group-hover/card:grayscale-0"
+            src={image}
+            title={title}
+          />
+        ) : null}
+
+        <div
+          className={cn(
+            "flex flex-col gap-4",
+            !isGrid &&
+              projectImage &&
+              "sm:flex-row sm:items-center sm:justify-between"
+          )}
+        >
+          <div className="space-y-1.5">
+            <Title
+              className="font-sans text-lg sm:text-xl font-bold tracking-tight text-foreground"
+              render={showHeader ? <h3>{titleLink}</h3> : <h2>{titleLink}</h2>}
+            />
+            <p className="text-muted-foreground text-sm sm:text-[15px] leading-relaxed font-normal">
+              {description}
+            </p>
+          </div>
+
+          {!isGrid && projectImage ? (
+            <MediaPreview
+              className="aspect-1200/630 shrink-0 grayscale transition-[filter] duration-300 group-hover/card:grayscale-0 sm:w-44"
+              src={projectImage}
               title={title}
             />
-          )}
-          {links.github && (
-            <ProjectLink
-              href={links.github}
-              label="GitHub"
-              icon={<Icons.github />}
-              isGrid={isGrid}
-              preview={githubPreview}
-              slug={slug}
-              title={title}
-            />
-          )}
+          ) : null}
         </div>
       </div>
 
-      <p className="text-muted-foreground text-sm font-normal">{description}</p>
+      <div className="flex items-center justify-between border-t border-border/60 pt-3">
+        <Link
+          className="inline-flex items-center gap-1.5 font-mono text-[11px] font-medium tracking-widest uppercase text-muted-foreground transition-colors hover:text-foreground"
+          href={`${ROUTES.PROJECTS}/${slug}`}
+          onClick={handleDetailClick}
+        >
+          <span>Case study</span>
+          <ArrowUpRightIcon
+            aria-hidden="true"
+            className="size-3.5 transition-transform duration-200 group-hover/card:translate-x-0.5 group-hover/card:-translate-y-0.5"
+          />
+        </Link>
+      </div>
     </div>
   );
 };

@@ -2,7 +2,7 @@ import { SITE } from "@/constants/site";
 import { getLastUpdated } from "@/lib/github/contributions";
 
 const SiteFooter = () => (
-  <footer className="mt-auto animate-slide-in delay-700 view-container px-4">
+  <footer className="mt-auto animate-slide-in delay-700 view-container px-5 sm:px-6">
     <div className="flex items-center justify-between border-t pt-3 pb-[calc(env(safe-area-inset-bottom,0)+0.75rem)]">
       <p className="text-muted-foreground text-xs">
         Last updated · {getLastUpdated()}

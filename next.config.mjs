@@ -2,6 +2,10 @@ import { createContent } from "fuma-content/next";
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  allowedDevOrigins: [
+    "*.trycloudflare.com",
+    "interfaces-flood-appliance-nylon.trycloudflare.com",
+  ],
   images: {
     remotePatterns: [
       {

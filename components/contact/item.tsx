@@ -8,6 +8,7 @@ interface ContactItemProps
   preview?: GlimpseData | null;
 }
 
+/** Displays a monochrome social profile card linking externally with hover previews. */
 const ContactItem = ({
   title,
   icon,
@@ -18,32 +19,40 @@ const ContactItem = ({
 }: ContactItemProps) => (
   <div
     className={cn(
-      "py-2 flex items-center justify-start gap-4 transition-[border-color,opacity] duration-50 hover:opacity-100 group-hover:opacity-30",
+      "flex items-center justify-between gap-3 rounded-xl border border-border/80 bg-card/50 px-4 py-3 transition-colors duration-200 hover:border-foreground/30 hover:bg-card",
       className
     )}
     {...attr}
   >
-    {icon && title && icon({ className: "size-4" })}
-    <span>
-      {link?.url && (
-        <AppLink
-          className="text-muted-foreground text-sm font-normal"
-          href={link?.url}
-          target="_blank"
-          external
-          preview={preview}
-          eventName="contact_link_click"
-          eventProperties={{ platform: title, url: link.url }}
-        >
-          {link?.display}
-        </AppLink>
-      )}
-      {!link?.url && (
-        <span className="text-muted-foreground text-sm font-normal">
-          {"link not found"}
-        </span>
-      )}
-    </span>
+    <div className="flex min-w-0 items-center gap-3">
+      <span className="shrink-0 text-foreground grayscale">
+        {icon({ className: "size-4" })}
+      </span>
+      <div className="min-w-0">
+        {title ? (
+          <span className="block font-mono text-[10px] font-medium tracking-[0.2em] uppercase text-muted-foreground">
+            {title}
+          </span>
+        ) : null}
+        {link?.url ? (
+          <AppLink
+            className="text-foreground text-sm font-medium"
+            eventName="contact_link_click"
+            eventProperties={{ platform: title, url: link.url }}
+            external
+            href={link.url}
+            preview={preview}
+            target="_blank"
+          >
+            {link.display}
+          </AppLink>
+        ) : (
+          <span className="text-muted-foreground text-sm font-normal">
+            {"link not found"}
+          </span>
+        )}
+      </div>
+    </div>
   </div>
 );
 

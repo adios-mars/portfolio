@@ -9,6 +9,13 @@ interface MediaPreviewProps {
   type?: "video" | "image";
 }
 
+const getImagePosition = (src: string) => {
+  if (src.includes("katch")) {
+    return "object-top";
+  }
+  return "object-center";
+};
+
 const MediaPreview = ({
   src,
   title,
@@ -39,7 +46,10 @@ const MediaPreview = ({
           <img
             src={src}
             alt={title}
-            className="absolute inset-0 z-1 h-full w-full object-cover"
+            className={cn(
+              "absolute inset-0 z-1 h-full w-full object-cover",
+              getImagePosition(src)
+            )}
           />
         </>
       )}

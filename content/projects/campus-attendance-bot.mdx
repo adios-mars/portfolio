@@ -1,0 +1,45 @@
+---
+slug: campus-attendance-bot
+---
+
+## Overview
+
+Campus Attendance Bot is an asynchronous Telegram-based attendance management system built for Dire Dawa University (DDU). Powered by Python, Aiogram 3, and SQLite configured with Write-Ahead Logging (WAL), the system enables instructors to manage courses, enroll cohorts, run timed anti-cheat check-ins, and export formatted institutional PDF reports directly inside Telegram.
+
+## Core features
+
+- **Multi-Course Administration**: Authorized instructors configure and manage multiple courses across departments, academic years, and semesters.
+- **Deep-Link Enrollment via Class Representatives**: Generates unique Telegram deep-links distributed through Class Representatives for streamlined student onboarding.
+- **Timed Anti-Cheat In-Class Sessions**: Issues a randomized 4-digit PIN with a strict 60-second check-in window to prevent remote proxy submissions.
+- **Dead Phone / No-Device Override**: Real-time missing-student roster lets instructors mark verified students manually with an audit trail.
+- **Institutional PDF Dossier Export**: Generates clean vector attendance reports with zebra striping and formal signature blocks using ReportLab.
+- **Disciplinary Watchdog**: Monitors cumulative absences and automatically flags students reaching the 3-absence university threshold.
+- **Leave & Permission Workflow**: Supports structured submission and instructor review of student medical and personal absence requests inside Telegram.
+
+## System architecture
+
+| Layer           | Technology               | Purpose                                                      |
+| --------------- | ------------------------ | ------------------------------------------------------------ |
+| Client Surface  | Telegram Bot Interface   | Cross-platform mobile, desktop, and web access for students  |
+| Bot & FSM Layer | Python 3 / Aiogram 3     | Asynchronous router handlers and multi-step conversation FSM |
+| Concurrency     | Asyncio + SQLite WAL     | High-concurrency classroom batch check-ins without lockups   |
+| Reporting       | ReportLab                | Institutional vector PDF attendance sheets and summaries     |
+
+## Tech stack
+
+<TechStack
+  items={[
+    "Python",
+    "Aiogram 3",
+    "Asyncio",
+    "SQLite WAL",
+    "ReportLab",
+    "Telegram Bot API",
+  ]}
+/>
+
+## Security & verification standards
+
+- **Role Isolation**: Strict separation between instructor administration commands and student check-in workflows.
+- **Concurrency Protection**: SQLite Write-Ahead Logging avoids write-lock contention during simultaneous class check-ins.
+- **Enrollment Validation**: Verifies course membership before accepting attendance check-ins to block cross-course submissions.

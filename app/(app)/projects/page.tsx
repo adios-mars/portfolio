@@ -1,7 +1,7 @@
 import { ProjectsView } from "@/components/project/view";
+import { SectionHeading } from "@/components/section-heading";
 import { prefetchGlimpses } from "@/components/ui/glimpse/server";
 import { Section } from "@/components/ui/section";
-import { Title } from "@/components/ui/title";
 import { ROUTES } from "@/constants/routes";
 import { collectProjectUrls, getProjects } from "@/lib/projects";
 import { BreadcrumbJsonLd, projectsBreadcrumbs } from "@/seo/json-ld";
@@ -22,11 +22,15 @@ const ProjectsPage = async () => {
   return (
     <>
       <BreadcrumbJsonLd items={projectsBreadcrumbs()} />
-      <header className="animate-slide-in space-y-2 px-4 py-6">
-        <Title className="text-xl font-medium italic">{"projects."}</Title>
-        <p className="text-muted-foreground text-sm">{DESCRIPTION}</p>
+      <header className="px-4 pt-6 pb-4">
+        <SectionHeading
+          as="h1"
+          description={DESCRIPTION}
+          eyebrow="03 — Selected Work"
+          title="Projects"
+        />
       </header>
-      <Section className="delay-100 flex flex-col gap-4 py-2">
+      <Section className="animate-none flex flex-col gap-6 py-4">
         <ProjectsView
           showHeader={false}
           showToolbar={true}

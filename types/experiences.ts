@@ -1,4 +1,10 @@
-export type ExperienceCategory = "FinTech" | "HRTech" | "SportsTech";
+export type ExperienceCategory =
+  | "Open Source"
+  | "Backend & Automation"
+  | "Systems"
+  | "FinTech"
+  | "HRTech"
+  | "SportsTech";
 
 export interface ExperienceOrg {
   name: string;

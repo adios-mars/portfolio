@@ -3,10 +3,12 @@ export type SectionId =
   | "components"
   | "contact"
   | "crafts"
+  | "experience"
   | "experiences"
   | "favorites"
   | "home"
   | "projects"
+  | "skills"
   | "uses"
   | "stats";
 

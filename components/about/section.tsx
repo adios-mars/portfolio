@@ -1,70 +1,28 @@
-import { MailIcon } from "lucide-react";
-import { Suspense } from "react";
-
-import {
-  GitHubContributions,
-  GitHubContributionsFallback,
-} from "@/components/about/github-contributions";
 import { IntroSection } from "@/components/about/intro-section";
-import { AppLink } from "@/components/ui/app-link";
-import { Button } from "@/components/ui/button";
-import { Callout } from "@/components/ui/callout";
-import { LINK } from "@/constants/links";
-import { getGitHubContributions } from "@/lib/github/contributions";
 
-const AboutSection = () => {
-  const contributions = getGitHubContributions();
+const AboutSection = () => (
+  <IntroSection>
+    <div className="flex flex-col gap-5 sm:gap-6 pt-3 sm:pt-4">
+      {/* Monumental Hero Display Title */}
+      <h1 className="font-sans text-5xl sm:text-7xl md:text-8xl lg:text-[105px] xl:text-[120px] font-bold tracking-tight leading-[1.04] text-foreground py-1">
+        Building{" "}
+        <span className="font-courgette not-italic font-normal text-foreground/90">
+          reliable
+        </span>
+        <br className="hidden sm:block" /> systems, mobile &amp; web apps.
+      </h1>
 
-  return (
-    <IntroSection>
-      <div className="prose text-muted-foreground prose-p:my-2 dark:prose-invert max-w-full text-sm leading-6 font-normal">
-        <p>
-          Software engineer building practical systems, mobile applications, and
-          modern web platforms.
-        </p>
-        <p>
-          Passionate about open-source engineering; from concurrent networking
-          in C and real-time transit tracking with Flutter to full-stack web
-          applications with React and TypeScript.
-        </p>
-      </div>
-      <Callout className="space-y-1 p-1">
-        <Suspense fallback={<GitHubContributionsFallback />}>
-          <GitHubContributions contributions={contributions} />
-        </Suspense>
-        <div className="flex flex-col gap-3 p-2">
-          <p>
-            Interested in working together? Check out my{" "}
-            <AppLink
-              href={LINK.GITHUB}
-              target="_blank"
-              className="text-muted-foreground text-sm font-medium inline-flex min-w-17.25"
-              external
-              eventName="external_link_click"
-              eventProperties={{ location: "work_together" }}
-            >
-              GitHub
-            </AppLink>
-          </p>
-          <div className="flex flex-row items-center gap-2">
-            <Button
-              nativeButton={false}
-              render={
-                <AppLink
-                  href={`mailto:${LINK.EMAIL}`}
-                  target="_blank"
-                  eventName="send_email_click"
-                />
-              }
-            >
-              <MailIcon />
-              Send an email
-            </Button>
-          </div>
-        </div>
-      </Callout>
-    </IntroSection>
-  );
-};
+      {/* Editorial Overview Paragraph */}
+      <p className="max-w-3xl text-lg sm:text-xl md:text-2xl font-light leading-relaxed text-muted-foreground">
+        Systems-minded engineer turning ideas into clean, real-world software
+        across{" "}
+        <span className="text-foreground font-semibold">
+          C, Flutter, React, Next.js &amp; TypeScript
+        </span>
+        . Ready to learn fast and ship high-impact digital products.
+      </p>
+    </div>
+  </IntroSection>
+);
 
 export { AboutSection };

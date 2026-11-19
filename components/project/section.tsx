@@ -13,7 +13,10 @@ const ProjectSection = async () => {
   const previews = await prefetchGlimpses(collectProjectUrls(allProjects));
 
   return (
-    <Section className={cn("delay-300 flex flex-col gap-4")} id="projects">
+    <Section
+      className={cn("animate-none flex flex-col gap-8 py-10 sm:py-12")}
+      id="projects"
+    >
       <ProjectsView
         projects={allProjects}
         previews={previews}

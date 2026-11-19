@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 
 import { ContentTOC } from "@/components/content-toc";
 import { MdxBody } from "@/components/mdx-body";
+import { BackToProjectsButton } from "@/components/project/back-button";
 import { TrackedProjectLinks } from "@/components/project/tracked-links";
 import { Badge } from "@/components/ui/badge";
 import { glimpse } from "@/components/ui/glimpse/server";
@@ -17,6 +18,7 @@ import {
 } from "@/lib/projects";
 import { BreadcrumbJsonLd, projectsBreadcrumbs } from "@/seo/json-ld";
 import { createMetadata } from "@/seo/metadata";
+import { cn } from "@/lib/utils";
 import type { Project } from "@/types/projects";
 
 interface ProjectPageProps {
@@ -58,6 +60,13 @@ const getPreviewImage = async (project: Project): Promise<string | null> => {
   return data.image;
 };
 
+const getCaseStudyImagePosition = (slug: string) => {
+  if (slug === "katch") {
+    return "object-top";
+  }
+  return "object-center";
+};
+
 const ProjectPage = async ({ params }: ProjectPageProps) => {
   const { slug } = await params;
   const project = getProjectBySlug(slug);
@@ -83,30 +92,41 @@ const ProjectPage = async ({ params }: ProjectPageProps) => {
 
       <ContentTOC items={tocItems} />
 
-      <article className="px-4 py-6 space-y-4">
-        <div className="flex flex-wrap items-center gap-2 text-sm text-muted-foreground">
-          <Badge variant="outline" className="text-muted-foreground">
-            {project.category}
-          </Badge>
-          <span aria-hidden>·</span>
-          <time dateTime={`${project.date.year}-${project.date.month}`}>
-            {formatProjectDate(project.date)}
-          </time>
+      <article className="px-4 py-6 space-y-5">
+        <div className="flex flex-wrap items-center justify-between gap-3 border-b border-border/40 pb-4">
+          <BackToProjectsButton />
+          <div className="flex flex-wrap items-center gap-2 text-sm text-muted-foreground">
+            <Badge variant="outline" className="text-muted-foreground">
+              {project.category}
+            </Badge>
+            <span aria-hidden>·</span>
+            <time dateTime={`${project.date.year}-${project.date.month}`}>
+              {formatProjectDate(project.date)}
+            </time>
+          </div>
         </div>
 
-        <header className="animate-slide-in space-y-2">
+        <header className="animate-slide-in space-y-2 pt-1">
           <Title className="font-sans">{project.title}</Title>
           <p className="text-muted-foreground text-sm">{project.description}</p>
         </header>
 
         {imageSrc && (
           <div className="animate-slide-in delay-100 rounded-md border p-1">
-            <div className="relative aspect-1200/630 w-full overflow-hidden rounded-sm border border-border select-none">
+            <div
+              className={cn(
+                "relative aspect-1200/630 w-full overflow-hidden rounded-sm border border-border select-none",
+                project.slug === "taxi-ale" && "bg-[#3896a8]"
+              )}
+            >
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
                 src={imageSrc}
                 alt={project.title}
-                className="h-full w-full object-cover"
+                className={cn(
+                  "h-full w-full object-cover",
+                  getCaseStudyImagePosition(project.slug)
+                )}
               />
             </div>
           </div>
@@ -119,6 +139,16 @@ const ProjectPage = async ({ params }: ProjectPageProps) => {
         />
 
         <MdxBody className="delay-300 mt-10" Content={Content} />
+
+        <div className="mt-12 flex flex-wrap items-center justify-between gap-4 border-t border-border/60 pt-6">
+          <BackToProjectsButton />
+          <a
+            href="#about"
+            className="font-mono text-xs font-semibold uppercase tracking-wider text-muted-foreground hover:text-foreground transition-colors"
+          >
+            Back to top ↑
+          </a>
+        </div>
       </article>
     </>
   );
