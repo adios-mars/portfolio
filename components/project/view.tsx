@@ -16,7 +16,7 @@ import { cn } from "@/lib/utils";
 import type { Project } from "@/types/projects";
 
 import { ProjectFlipMockup } from "./flip-mockup";
-import { PROJECT_TECH_STACKS, ProjectsFlipScroll } from "./flip-scroll";
+import { PROJECT_TECH_STACKS } from "./flip-scroll";
 import { ProjectItem } from "./item";
 import { ProjectsViewProvider, useProjectsView } from "./view-context";
 import type { ProjectSourceControl } from "./view-toolbar";
@@ -197,28 +197,26 @@ const ProjectsViewList = ({
 
   if (featuredOnly) {
     return (
-      <>
-        {/* Mobile View: Large, full-width Solomon-style showcase cards (no tiny card, no black void, no trapped scroll) */}
-        <div className="flex sm:hidden flex-col gap-6 w-full">
-          {filteredProjects.map((project, index) => (
+      <div
+        className={cn(
+          "grid grid-cols-1 md:grid-cols-2 gap-6 w-full",
+          viewClassName
+        )}
+      >
+        {filteredProjects.map((project, index) => (
+          <RevealItem
+            className="h-full"
+            delay={Math.min(index * 0.05, 0.2)}
+            key={project.slug}
+          >
             <FeaturedProjectCard
-              key={project.slug}
               project={project}
               index={index}
               total={filteredProjects.length}
             />
-          ))}
-        </div>
-
-        {/* Desktop View: Interactive 3D Card Stage */}
-        <div className="hidden sm:block w-full">
-          <ProjectsFlipScroll
-            className={viewClassName}
-            previews={previews}
-            projects={filteredProjects}
-          />
-        </div>
-      </>
+          </RevealItem>
+        ))}
+      </div>
     );
   }
 
